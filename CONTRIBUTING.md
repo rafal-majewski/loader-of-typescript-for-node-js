@@ -6,6 +6,9 @@
 - .git - Metadata of the [Git](https://git-scm.com) repository;
 - [.gitignore](https://git-scm.com/docs/gitignore);
 - [.vscode](https://code.visualstudio.com/docs/configure/settings#_workspace-settings) - Configuration of [Visual Studio Code](https://code.visualstudio.com);
+- node_modules - [Node.js](https://nodejs.org) dependencies;
+- [package-lock.json](https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json) - [npm](https://www.npmjs.com) lock;
+- [package.json](https://docs.npmjs.com/cli/v11/configuring-npm/package-json) - Configuration of the [Node.js](https://nodejs.org) project;
 - [README.md](https://en.wikipedia.org/wiki/README);
 
 ## Development setup
