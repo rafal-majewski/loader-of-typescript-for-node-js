@@ -15,6 +15,10 @@
 - [prettier.config.ts](https://prettier.io/docs/configuration) - Configuration of [Prettier](https://prettier.io);
 - [README.md](https://en.wikipedia.org/wiki/README);
 - [release-it.config.ts](https://github.com/release-it/release-it/blob/main/docs/configuration.md#configuration) - Configuration of [release-it](https://github.com/release-it/release-it);
+- testing - Testing code;
+  - core - Core modules;
+  - instances - Instances of core modules;
+  - tests - General tests;
 - [tsconfig.json](https://www.typescriptlang.org/docs/handbook/tsconfig-json.html) - Configuration of [TypeScript](https://www.typescriptlang.org);
 
 ## Development setup
