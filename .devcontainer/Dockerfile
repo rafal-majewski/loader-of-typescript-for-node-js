@@ -15,4 +15,7 @@ RUN curl -fsSL https://nodejs.org/dist/v${NODE_JS__VERSION}/node-v${NODE_JS__VER
 RUN tar -xJf /tmp/node.tar.xz -C /tmp
 RUN cp -r /tmp/node-v${NODE_JS__VERSION}-linux-x64/* /usr/local/
 RUN rm -rf /tmp/node.tar.xz /tmp/node-v${NODE_JS__VERSION}-linux-x64
+RUN groupadd -g 969 docker
+RUN usermod -aG docker developer
+RUN apt-get update && apt-get install -y --no-install-recommends docker-cli docker-compose
 USER developer
