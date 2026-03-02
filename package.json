@@ -45,6 +45,7 @@
 		"release-it": "release-it --config='./release-it.config.ts'",
 		"test:check": "node --experimental-test-coverage --test --test-concurrency=1 --test-coverage-exclude='**/*.test.*' --test-coverage-exclude='node_modules/**/*' --test-coverage-exclude='testing/**/*' '**/*.test.ts'",
 		"test:check:integration": "node --test --test-concurrency=1 '**/*.integration.test.ts'",
+		"test:check:unit": "node --test '**/*.unit.test.ts'",
 		"typescript:check": "tsc"
 	},
 	"type": "module",
