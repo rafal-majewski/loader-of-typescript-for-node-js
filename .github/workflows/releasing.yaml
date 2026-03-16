@@ -1,0 +1,113 @@
+env:
+  DEBIAN__DOCKER_IMAGE__TAG__DATE: "20251208"
+  NODEJS_VERSION: "24.14.0"
+jobs:
+  build_docker_image:
+    name: "Build a Docker image"
+    needs: ["release"]
+    outputs:
+      release_version: "${{needs.release.outputs.release_version}}"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Download the release"
+        uses: "robinraju/release-downloader@v1.12"
+        with:
+          tag: "${{needs.release.outputs.release_version}}"
+          tarBall: true
+      - name: "Unpack the release"
+        run: |
+          tar -xzf ./${{github.event.repository.name}}-${{needs.release.outputs.release_version}}.tar.gz
+      - name: "Remove tarball"
+        run: |
+          rm ./${{github.event.repository.name}}-${{needs.release.outputs.release_version}}.tar.gz
+      - name: "Move the files to the current directory"
+        run: |
+          shopt -s dotglob
+          mv ./${{github.event.repository.owner.login}}-${{github.event.repository.name}}-*/* ./
+          shopt -u dotglob
+          rm -rf ./${{github.event.repository.owner.login}}-${{github.event.repository.name}}-*/
+      - name: "Build a Docker image"
+        run: |
+          docker build --tag=${{vars.DOCKER_REGISTRY_REPOSITORY_NAME}}:${{needs.release.outputs.release_version}} --file=Dockerfile --build-arg="ALPINE_VERSION=${{env.ALPINE_VERSION}}" --build-arg="NODEJS_VERSION=${{env.NODEJS_VERSION}}" .
+      - name: "Upload the Docker image as an artifact"
+        uses: "ishworkh/container-image-artifact-upload@v2.0.1"
+        with:
+          image: "${{vars.DOCKER_REGISTRY_REPOSITORY_NAME}}:${{needs.release.outputs.release_version}}"
+  publish_to_docker_registry:
+    name: "Publish to the Docker registry"
+    needs: ["build_docker_image"]
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Download the built Docker image"
+        uses: "ishworkh/container-image-artifact-download@v2.1.0"
+        with:
+          image: "${{vars.DOCKER_REGISTRY_REPOSITORY_NAME}}:${{needs.build_docker_image.outputs.release_version}}"
+      - name: "Login to the Docker registry"
+        uses: "docker/login-action@v3"
+        with:
+          password: "${{secrets.DOCKER_REGISTRY_PASSWORD}}"
+          registry: "${{vars.DOCKER_REGISTRY_HOST}}"
+          username: "${{secrets.DOCKER_REGISTRY_USERNAME}}"
+      - name: "Push the Docker image to the registry"
+        run: |
+          docker push ${{vars.DOCKER_REGISTRY_HOST}}/${{vars.DOCKER_REGISTRY_REPOSITORY_NAME}}:${{needs.build_docker_image.outputs.release_version}}
+  publish_to_npm_registry:
+    name: "Publish to the npm registry"
+    needs: ["release"]
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Download the release"
+        uses: "robinraju/release-downloader@v1.12"
+        with:
+          tag: "${{needs.release.outputs.release_version}}"
+          tarBall: true
+      - name: "Unpack the release"
+        run: "tar -xzf ./${{github.event.repository.name}}-${{needs.release.outputs.release_version}}.tar.gz"
+      - name: "Remove tarball"
+        run: "rm ./${{github.event.repository.name}}-${{needs.release.outputs.release_version}}.tar.gz"
+      - name: "Move the files to the current directory"
+        run: |
+          shopt -s dotglob
+          mv ./${{github.event.repository.owner.login}}-${{github.event.repository.name}}-*/* ./
+          shopt -u dotglob
+          rm -rf ./${{github.event.repository.owner.login}}-${{github.event.repository.name}}-*/
+      - name: "Publish to the npm registry"
+        run: |
+          npm publish --registry=${{vars.NPM_REGISTRY_URL}} --//$(echo -n ${{vars.NPM_REGISTRY_URL}} | sed 's/^[^\/]*\/\///'):_authToken=${{secrets.NPM_REGISTRY_ACCESS_TOKEN}}
+  release:
+    name: "Release"
+    outputs:
+      release_version: "${{steps.remember_release_version.outputs.release_version}}"
+    permissions:
+      contents: "write"
+      pull-requests: "write"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout the repository"
+        uses: "actions/checkout@v6.0.2"
+        with:
+          fetch-depth: 0
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v6.3.0"
+        with:
+          cache: "npm"
+          node-version: "${{env.NODEJS_VERSION}}"
+      - name: "Configure Git"
+        run: |
+          git config user.name "${GITHUB_ACTOR}"
+          git config user.email "${GITHUB_ACTOR}@users.noreply.github.com"
+      - name: "Install the dependencies"
+        run: |
+          npm ci
+      - name: "Release to a new branch"
+        env:
+          GITHUB_TOKEN: "${{secrets.GITHUB_TOKEN}}"
+        run: |
+          npm run release -- --verbose --ci
+      - id: "remember_release_version"
+        name: "Remember the release version"
+        run: |
+          echo "release_version=$(node -p 'require("./package.json").version')" >> $GITHUB_OUTPUT
+name: "Releasing"
+on:
+  workflow_dispatch:
