@@ -1,6 +1,22 @@
 env:
   NODEJS_VERSION: "24.14.0"
 jobs:
+  eslint_check:
+    name: "ESLint check"
+    runs-on: "ubuntu-latest"
+    steps:
+      - name: "Checkout the repository"
+        uses: "actions/checkout@v6.0.2"
+      - name: "Setup Node.js"
+        uses: "actions/setup-node@v6.3.0"
+        with:
+          cache: "npm"
+          node-version: "${{env.NODEJS_VERSION}}"
+      - name: "Install the dependencies"
+        run: "npm ci"
+      - name: "Run the ESLint check"
+        run: |
+          npm run eslint:check
   typescript_check:
     name: "TypeScript check"
     runs-on: "ubuntu-latest"

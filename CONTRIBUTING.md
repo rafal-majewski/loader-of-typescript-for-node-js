@@ -6,6 +6,7 @@
 - .git - Metadata of the [Git](https://git-scm.com) repository;
 - [.gitignore](https://git-scm.com/docs/gitignore);
 - [.vscode](https://code.visualstudio.com/docs/configure/settings#_workspace-settings) - Configuration of [Visual Studio Code](https://code.visualstudio.com);
+- [eslint.config.ts](https://eslint.org/docs/latest/use/configure/configuration-files) - Configuration of [ESLint](https://eslint.org);
 - node_modules - [Node.js](https://nodejs.org) dependencies;
 - [package-lock.json](https://docs.npmjs.com/cli/v7/configuring-npm/package-lock-json) - [npm](https://www.npmjs.com) lock;
 - [package.json](https://docs.npmjs.com/cli/v11/configuring-npm/package-json) - Configuration of the [Node.js](https://nodejs.org) project;
@@ -20,6 +21,30 @@
 2. Connect to the development container;
 
 ## Developing
+
+### ESLint
+
+[ESLint](https://eslint.org) is used for linting.
+
+#### Checking
+
+Run
+
+```
+npm run eslint:check
+```
+
+to perform linting. You should also have your editor set up to display the issues in your editor as you code.
+
+#### Fixing
+
+Run
+
+```
+npm run eslint:fix
+```
+
+to automatically fix linting issues in the codebase where possible.
 
 ### TypeScript
 
