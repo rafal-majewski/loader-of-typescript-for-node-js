@@ -7,6 +7,7 @@
 	"bugs": {
 		"url": "https://github.com/rafal-majewski/loader-of-typescript-for-node-js/issues"
 	},
+	"description": "A loader of TypeScript for Node.js.",
 	"devDependencies": {
 		"@commitlint/cli": "20.5.0",
 		"@commitlint/types": "20.5.0",
@@ -30,6 +31,7 @@
 		"node": ">=24.14.0",
 		"npm": ">=11.9.0"
 	},
+	"exports": "./source/entrypoint-of-source.js",
 	"homepage": "https://github.com/rafal-majewski/loader-of-typescript-for-node-js#readme",
 	"name": "loader-of-typescript-for-node-js",
 	"repository": {
